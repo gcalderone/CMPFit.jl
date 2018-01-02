@@ -1,4 +1,5 @@
 using BinDeps
+using Compat.Sys: iswindows, isapple, isunix
 
 @BinDeps.setup
 
@@ -11,9 +12,18 @@ provides(Sources, URI("https://www.physics.wisc.edu/~craigm/idl/down/cmpfit-1.3a
 builddir = joinpath(BinDeps.depsdir(libmpfit), "src", "cmpfit-1.3a", "build")
 libdir = BinDeps.libdir(libmpfit)
 
+libfilename = ""
+if isapple()
+    libfilename = "libmpfit.dylib"
+elseif isunix()
+    libfilename = "libmpfit.so"
+elseif iswindows()
+    libfilename = "libmpfit.dll"
+end
+
 provides(SimpleBuild, 
          (@build_steps begin
-          FileRule(joinpath(libdir,"libmpfit.so"),
+          FileRule(joinpath(libdir, libfilename),
                    @build_steps begin
                    GetSources(libmpfit)
                    CreateDirectory(builddir)
@@ -24,7 +34,7 @@ provides(SimpleBuild,
                    `cp ../../../cmake.mpfit ../CMakeLists.txt`
                    `cmake ../`
                    `make`
-                   `cp libmpfit.so $libdir`
+                   `cp $libfilename $libdir`
                    end
                    end
                    )
