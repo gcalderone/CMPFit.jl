@@ -13,10 +13,11 @@ the
 and allowing simple and quick solutions to Least Squares minimization
 problems in Julia.
 
-** This is a wrapper for a C library, hence it require to download the
+
+**This is a wrapper for a C library, hence it require to download the
 C code and compile it.  However, I am already
 working on a pure Julia implementation of the MINPACK algorithm. Stay
-tuned.... **
+tuned....**
 
 
 -------
