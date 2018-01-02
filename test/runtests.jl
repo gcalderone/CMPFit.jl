@@ -75,7 +75,7 @@ zero = res.param .- [4.703829, 0.062586, 6.163087];
 
 ## testquadfix
 param = [1., 0., 1.]
-pinfo = cmpfit_parinfo(length(param))
+pinfo = CMPFit.Parinfo(length(param))
 pinfo[2].fixed = 1
 
 res = cmpfit(x, y, e, quadfunc, param, parinfo=pinfo)
@@ -135,7 +135,7 @@ zero = res.param .- [0.480441, 4.550754, -0.062562, 0.397473];
 
 ## testgaussfix
 param = [0.0, 1.0, 0.0, 0.1]
-pinfo = cmpfit_parinfo(length(param))
+pinfo = CMPFit.Parinfo(length(param))
 pinfo[1].fixed = 1
 pinfo[3].fixed = 1
 

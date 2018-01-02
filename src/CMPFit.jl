@@ -8,7 +8,7 @@ end
 
 
 # Exported symbols
-export cmpfit, cmpfit_parinfo
+export cmpfit
 
 
 ######################################################################
@@ -47,6 +47,13 @@ mutable struct Parinfo
     
     "Create an empty `Parinfo` structure."
     Parinfo() = new(0, (0, 0), (0, 0), 0, 0, 0, 0, 0, 0, 0)
+end
+
+
+#---------------------------------------------------------------------
+"Create a `Vector{Parinfo}` of empty `Parinfo` structures, whose length is given by `npar`."
+function Parinfo(npar::Int)
+    return [Parinfo() for i in 1:npar]
 end
 
 
@@ -206,12 +213,6 @@ const c_eval_resid = cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}
 # Public functions
 ######################################################################
 
-#---------------------------------------------------------------------
-"Create a `Vector{Parinfo}` of empty `Parinfo` structures, whose length is given by `npar`."
-function cmpfit_parinfo(npar::Int)
-    return [Parinfo() for i in 1:npar]
-end
-
 
 #---------------------------------------------------------------------
 "Main CMPFit function"
@@ -233,7 +234,7 @@ function cmpfit(funct::Function,
     res_C.covar  = Libc.malloc(length(param)^2 * sizeof(Cdouble) )
 
     if parinfo == nothing
-        parinfo = cmpfit_parinfo(length(param))
+        parinfo = Parinfo(length(param))
     end
     if length(parinfo) != length(param)
         error("Lengths of `param` and `parinfo` arrays are different")
