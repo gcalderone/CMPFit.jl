@@ -1,3 +1,5 @@
+__precompile__(false)
+
 module CMPFit
 
 if isfile(joinpath(dirname(@__FILE__),"..","deps","deps.jl"))
@@ -316,6 +318,44 @@ function cmpfit(independentData::AbstractArray,
         return ret
     end
     cmpfit(cmpfit_callback, guessParam, parinfo=parinfo, config=config)
+end
+
+
+
+if "ModelFitting" in keys(Pkg.installed())
+    # Import ModelFitting and the minimizer package.
+    import ModelFitting
+    const MF = ModelFitting
+    using CMPFit
+
+    mutable struct Minimizer <: MF.AbstractMinimizer
+        config::CMPFit.Config
+        Minimizer() = new(CMPFit.Config())
+    end
+
+    MF.supportParamLimits(f::Minimizer) = true
+
+    function MF.minimize(minimizer::Minimizer, evaluate::Function,
+                         data::Vector{MF.FloatType}, uncert::Vector{MF.FloatType},
+                         params::Vector{MF.Parameter})
+        
+        callback(pvalues::Vector{MF.FloatType}) = ((data .- evaluate(pvalues)) ./ uncert)
+        
+        guess = getfield.(params, :val)
+        low   = getfield.(params, :low)
+        high  = getfield.(params, :high)
+        parinfo = CMPFit.Parinfo(length(guess))
+        for i in 1:length(guess)
+            llow  = isfinite(low[i])   ?  1  :  0
+            lhigh = isfinite(high[i])  ?  1  :  0
+            parinfo[i].limited = (llow, lhigh)
+            parinfo[i].limits  = (low[i], high[i])
+        end
+        bestfit = CMPFit.cmpfit(callback, guess, parinfo=parinfo, config=minimizer.config)
+
+        # Output
+        return (:Optimal, getfield.(bestfit, :param), getfield.(bestfit, :perror))
+    end
 end
 
 end # module
