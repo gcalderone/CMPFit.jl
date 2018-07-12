@@ -336,10 +336,10 @@ if "ModelFitting" in keys(Pkg.installed())
     MF.supportParamLimits(f::Minimizer) = true
 
     function MF.minimize(minimizer::Minimizer, evaluate::Function,
-                         data::Vector{MF.FloatType}, uncert::Vector{MF.FloatType},
+                         data::Vector{Float64}, uncert::Vector{Float64},
                          params::Vector{MF.Parameter})
         
-        callback(pvalues::Vector{MF.FloatType}) = ((data .- evaluate(pvalues)) ./ uncert)
+        callback(pvalues::Vector{Float64}) = ((data .- evaluate(pvalues)) ./ uncert)
         
         guess = getfield.(params, :val)
         low   = getfield.(params, :low)
