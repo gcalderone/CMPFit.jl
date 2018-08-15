@@ -2,6 +2,9 @@ __precompile__(false)
 
 module CMPFit
 
+using Printf
+using Pkg
+
 if isfile(joinpath(dirname(@__FILE__),"..","deps","deps.jl"))
     include("../deps/deps.jl")
 else
@@ -189,10 +192,10 @@ end
 #   ERROR: closures are not yet c-callable
 #
 "Function called from C to calculate the residuals"
-function julia_eval_resid(ndata::Cint, npar::Cint, _param::Ptr{Cdouble}, _resid::Ptr{Cdouble}, dummy::Ptr{Void}, _funct::Ptr{Wrap_A_Function})
-    const wrap  = unsafe_load(_funct)
-    const param = unsafe_wrap(Vector{Float64}, _param, npar)
-    const resid = unsafe_wrap(Vector{Float64}, _resid, ndata)
+function julia_eval_resid(ndata::Cint, npar::Cint, _param::Ptr{Cdouble}, _resid::Ptr{Cdouble}, dummy::Ptr{Nothing}, _funct::Ptr{Wrap_A_Function})
+    wrap  = unsafe_load(_funct)
+    param = unsafe_wrap(Vector{Float64}, _param, npar)
+    resid = unsafe_wrap(Vector{Float64}, _resid, ndata)
 
     # Compute residuals
     try
@@ -208,7 +211,7 @@ function julia_eval_resid(ndata::Cint, npar::Cint, _param::Ptr{Cdouble}, _resid:
 end
 
 "C-compatible address of the Julia `julia_eval_resid` function."
-const c_eval_resid = cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Void}, Ptr{Wrap_A_Function}))
+const c_eval_resid = @cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Nothing}, Ptr{Wrap_A_Function}))
 
 
 ######################################################################
@@ -252,8 +255,8 @@ function cmpfit(funct::Function,
     status = -999
     try
         status = ccall((:mpfit, libmpfit), Cint,
-                       (Ptr{Void}  , Cint         , Cint,          Ptr{Cdouble}, Ptr{imm_Parinfo}, Ptr{Config}, Ptr{Wrap_A_Function}, Ref{Result_C}),
-                       c_eval_resid, length(model), length(param), param       , imm_parinfo     , Ref(config), Ref(wrap)           , res_C)
+                       (Ptr{Nothing}, Cint         , Cint,          Ptr{Cdouble}, Ptr{imm_Parinfo}, Ptr{Config}, Ptr{Wrap_A_Function}, Ref{Result_C}),
+                       c_eval_resid , length(model), length(param), param       , imm_parinfo     , Ref(config), Ref(wrap)           , res_C)
     catch err
         print_with_color(:red, bold=true, "An error occurred during `mpfit` call:\n")
         println(err)
@@ -261,7 +264,7 @@ function cmpfit(funct::Function,
     end
 
     perror = Vector{Float64}();
-    covar  = Array{Float64, 2}(0,0)
+    covar  = Array{Float64, 2}(undef, 0, 0)
 
     if status > 0
         covar = Vector{Float64}()
@@ -272,7 +275,7 @@ function cmpfit(funct::Function,
         warn("mpfit returned status = " * string(status) * " < 0.")
     end
 
-    version = find(x -> x != 0, collect(res_C.version))
+    version = findall(x -> x != 0, collect(res_C.version))
     if length(version) == 0
         version = ""
     else

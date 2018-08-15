@@ -1,6 +1,6 @@
 
 using CMPFit
-using Base.Test
+using Test
 
 ## testlinfit
 x = [-1.7237128E+00,1.8712276E+00,-9.6608055E-01,
@@ -13,7 +13,7 @@ y = [1.9000429E-01,6.5807428E+00,1.4582725E+00,
      0.787615,3.2599759E+00,2.9771762E+00,
      4.5936475E+00]
 
-e = zeros(y) + 0.07
+e = fill(0., size(y)) .+ 0.07
 param = [1., 1.]
 
 function linfunc(x::Vector{Float64}, p::Vector{Float64})
@@ -48,7 +48,7 @@ y = [2.3095947E+01,2.6449392E+01,1.0204468E+01,
 	 1.5971818E+01,4.7668524E+00,4.9337711E+00,
 	 8.7348375E+00]
 
-e = zeros(y) + 0.2
+e = fill(0., size(y)) .+ 0.2
 param = [1., 1., 1.]
 
 function quadfunc(x::Vector{Float64}, p::Vector{Float64})
@@ -106,7 +106,7 @@ y = [-4.4494256E-02,8.7324673E-01,7.4443483E-01,
 	 1.5646480E+00,5.2322268E+00,4.2543168E+00,
 	 6.2792623E-01]
 
-e = zeros(y) + 0.5
+e = fill(0., size(y)) .+ 0.5
 param = [0.0, 1.0, 1.0, 1.0]
 
 function gaussfunc(x::Vector{Float64}, p::Vector{Float64})    
