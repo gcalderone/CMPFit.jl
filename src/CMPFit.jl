@@ -357,7 +357,7 @@ if "ModelFitting" in keys(Pkg.installed())
         bestfit = CMPFit.cmpfit(callback, guess, parinfo=parinfo, config=minimizer.config)
 
         # Output
-        return (:Optimal, getfield.(bestfit, :param), getfield.(bestfit, :perror))
+        return (:Optimal, getfield.(Ref(bestfit), :param), getfield.(Ref(bestfit), :perror))
     end
 end
 
