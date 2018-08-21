@@ -325,40 +325,36 @@ end
 
 
 
-if "ModelFitting" in keys(Pkg.installed())
-    # Import ModelFitting and the minimizer package.
-    import ModelFitting
-    const MF = ModelFitting
-    using CMPFit
+# Import DMFit and the minimizer package.
+import DMFit
 
-    mutable struct Minimizer <: MF.AbstractMinimizer
-        config::CMPFit.Config
-        Minimizer() = new(CMPFit.Config())
-    end
+mutable struct Minimizer <: DMFit.AbstractMinimizer
+    config::CMPFit.Config
+    Minimizer() = new(CMPFit.Config())
+end
 
-    MF.supportParamLimits(f::Minimizer) = true
+DMFit.support_param_limits(f::Minimizer) = true
 
-    function MF.minimize(minimizer::Minimizer, evaluate::Function,
-                         data::Vector{Float64}, uncert::Vector{Float64},
-                         params::Vector{MF.Parameter})
+function DMFit.minimize(minimizer::Minimizer, evaluate::Function,
+                           data::Vector{Float64}, uncert::Vector{Float64},
+                           params::Vector{DMFit.Parameter})
+    
+    callback(pvalues::Vector{Float64}) = ((data .- evaluate(pvalues)) ./ uncert)
         
-        callback(pvalues::Vector{Float64}) = ((data .- evaluate(pvalues)) ./ uncert)
-        
-        guess = getfield.(params, :val)
-        low   = getfield.(params, :low)
-        high  = getfield.(params, :high)
-        parinfo = CMPFit.Parinfo(length(guess))
-        for i in 1:length(guess)
-            llow  = isfinite(low[i])   ?  1  :  0
-            lhigh = isfinite(high[i])  ?  1  :  0
-            parinfo[i].limited = (llow, lhigh)
-            parinfo[i].limits  = (low[i], high[i])
-        end
-        bestfit = CMPFit.cmpfit(callback, guess, parinfo=parinfo, config=minimizer.config)
-
-        # Output
-        return (:Optimal, getfield.(Ref(bestfit), :param), getfield.(Ref(bestfit), :perror))
+    guess = getfield.(params, :val)
+    low   = getfield.(params, :low)
+    high  = getfield.(params, :high)
+    parinfo = CMPFit.Parinfo(length(guess))
+    for i in 1:length(guess)
+        llow  = isfinite(low[i])   ?  1  :  0
+        lhigh = isfinite(high[i])  ?  1  :  0
+        parinfo[i].limited = (llow, lhigh)
+        parinfo[i].limits  = (low[i], high[i])
     end
+    bestfit = CMPFit.cmpfit(callback, guess, parinfo=parinfo, config=minimizer.config)
+
+    # Output
+    return (:Optimal, getfield.(Ref(bestfit), :param), getfield.(Ref(bestfit), :perror))
 end
 
 end # module
