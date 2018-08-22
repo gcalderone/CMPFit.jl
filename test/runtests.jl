@@ -1,6 +1,10 @@
+if VERSION >= v"0.7.0"
+    using Test
+else
+    using Base.Test
+end
 
 using CMPFit
-using Test
 
 ## testlinfit
 x = [-1.7237128E+00,1.8712276E+00,-9.6608055E-01,

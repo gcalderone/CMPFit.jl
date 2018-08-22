@@ -2,8 +2,16 @@ __precompile__(false)
 
 module CMPFit
 
-using Printf
-using Pkg
+if VERSION >= v"0.7.0"
+    using Printf
+    using Pkg
+else
+    Nothing = Void
+    findall = find
+    macro cfunction(args...)
+        return :()
+    end
+end
 
 if isfile(joinpath(dirname(@__FILE__),"..","deps","deps.jl"))
     include("../deps/deps.jl")
@@ -210,9 +218,12 @@ function julia_eval_resid(ndata::Cint, npar::Cint, _param::Ptr{Cdouble}, _resid:
     return Cint(0)::Cint
 end
 
-"C-compatible address of the Julia `julia_eval_resid` function."
-const c_eval_resid = @cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Nothing}, Ptr{Wrap_A_Function}))
-
+#C-compatible address of the Julia `julia_eval_resid` function.
+if VERSION >= v"0.7.0"
+    const c_eval_resid = @cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Nothing}, Ptr{Wrap_A_Function}))
+else
+    const c_eval_resid = cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Nothing}, Ptr{Wrap_A_Function}))
+end
 
 ######################################################################
 # Public functions
@@ -264,8 +275,12 @@ function cmpfit(funct::Function,
     end
 
     perror = Vector{Float64}();
-    covar  = Array{Float64, 2}(undef, 0, 0)
-
+    if VERSION >= v"0.7.0"
+        covar  = Array{Float64, 2}(undef, 0, 0)
+    else
+        covar  = Array{Float64, 2}(0, 0)        
+    end
+    
     if status > 0
         covar = Vector{Float64}()
         for i in 1:length(param)  ; push!(perror, unsafe_load(res_C.perror, i)); end
