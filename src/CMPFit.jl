@@ -369,7 +369,11 @@ function DMFit.minimize(minimizer::Minimizer, evaluate::Function,
     bestfit = CMPFit.cmpfit(callback, guess, parinfo=parinfo, config=minimizer.config)
 
     # Output
-    return (:Optimal, getfield.(Ref(bestfit), :param), getfield.(Ref(bestfit), :perror))
+    if VERSION >= v"0.7.0"
+        return (:Optimal, getfield.(Ref(bestfit), :param), getfield.(Ref(bestfit), :perror))
+    else
+        return (:Optimal, getfield.(bestfit, :param), getfield.(bestfit, :perror))
+    end
 end
 
 end # module
