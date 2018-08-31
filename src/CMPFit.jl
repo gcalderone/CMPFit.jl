@@ -340,19 +340,19 @@ end
 
 
 
-# Import DMFit and the minimizer package.
-import DMFit
+# Import DataFitting and the minimizer package.
+import DataFitting
 
-mutable struct Minimizer <: DMFit.AbstractMinimizer
+mutable struct Minimizer <: DataFitting.AbstractMinimizer
     config::CMPFit.Config
     Minimizer() = new(CMPFit.Config())
 end
 
-DMFit.support_param_limits(f::Minimizer) = true
+DataFitting.support_param_limits(f::Minimizer) = true
 
-function DMFit.minimize(minimizer::Minimizer, evaluate::Function,
+function DataFitting.minimize(minimizer::Minimizer, evaluate::Function,
                            data::Vector{Float64}, uncert::Vector{Float64},
-                           params::Vector{DMFit.Parameter})
+                           params::Vector{DataFitting.Parameter})
     
     callback(pvalues::Vector{Float64}) = ((data .- evaluate(pvalues)) ./ uncert)
         
