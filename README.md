@@ -3,48 +3,29 @@
 
 [![Build Status](https://travis-ci.org/gcalderone/CMPFit.jl.svg?branch=master)](https://travis-ci.org/gcalderone/CMPFit.jl)
 
-The `CMPFit.jl` package is a wrapper for
-the
-[`mpfit` C-library](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html) by
-Craig Markwardt, providing access to the
-the [MINPACK](http://www.netlib.org/minpack/) implementation of
-the
-[Levenberg-Marquardt algorithm](https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm),
-and allowing simple and quick solutions to Least Squares minimization
-problems in Julia.
+The `CMPFit.jl` package is a wrapper for the [`mpfit` C-library](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html) by Craig Markwardt, providing access to the the [MINPACK](http://www.netlib.org/minpack/) implementation of the
+[Levenberg-Marquardt algorithm](https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm), and allowing simple and quick solutions to Least Squares minimization problems in Julia.
 
-
-**This is a wrapper for a C library, hence it require to download the
-C code and compile it.  However, I am already
-working on a pure Julia implementation of the MINPACK algorithm. Stay
-tuned....**
-
+**This is a wrapper for a C library, hence it require to download the C code and compile it.**
+Check the [LsqFit](https://github.com/JuliaNLSolvers/LsqFit.jl) package for a pure Julia solution.
 
 -------
 
 ## Installation
 
-To install `CMPFit` your machine should be equipped with `CMake` and a
-C compiler.  In the Julia REPL type:
+To install `CMPFit` your machine should be equipped with `CMake` and a C compiler.  In the Julia REPL type:
 
 ``` julia
-Pkg.clone("https://github.com/gcalderone/CMPFit.jl.git")
+] add CMPFit
 ```
-
-This will automaticaly download the `cmpfit` library (v1.3)
-from
-[Craig's webpage](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html) and
-compile it.
+This will automaticaly download the `cmpfit` library (v1.3) from [Craig's webpage](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html) and compile it.
 
 
 -------
 
 ## Usage
 
-Usage is very simple: given a set of observed data and uncertainties,
-define a (whatever complex) Julia function to evaluate a model to be
-compared with the data, and ask `cmpfit` to find the model parameter
-values which best fit the data.
+Usage is very simple: given a set of observed data and uncertainties, define a (whatever complex) Julia function to evaluate a model to be compared with the data, and ask `cmpfit` to find the model parameter values which best fit the data.
 
 Example:
 
@@ -82,25 +63,18 @@ res = cmpfit(x, y, e, GaussModel, param);
 println(res)
 ```
 
-The value returned by `cmpfit` is a Julia structure.  You may look at its
-content with:
+The value returned by `cmpfit` is a Julia structure.  You may look at its content with:
 ``` julia
 dump(res)
 ```
 
-Specifically, the best fit parameter values and their 1-sigma
-uncertainties are:
+Specifically, the best fit parameter values and their 1-sigma uncertainties are:
 ``` Julia
 println(res.param)
 println(res.perror)
 ```
 
-`CMPFit` mirrors all the facilities provided by the underlying
-C-library, e.g. a parameter can be fixed during the fit, or its value
-limited to a specific range. Moreover, the whole fitting process may
-be customized for, e.g., limiting the maximum number of model
-evaluation, or change the relative chi-squared convergence
-criterium. E.g.:
+`CMPFit` mirrors all the facilities provided by the underlying C-library, e.g. a parameter can be fixed during the fit, or its value limited to a specific range. Moreover, the whole fitting process may be customized for, e.g., limiting the maximum number of model evaluation, or change the relative chi-squared convergence criterium. E.g.:
 ``` Julia
 # Set guess parameters
 param = [0.5, 4.5, 1.0, 1.0]
@@ -130,7 +104,5 @@ res = cmpfit(x, y, e, GaussModel, param, parinfo=pinfo, config=config);
 println(res)
 ```
 
-See
-[Craig's webpage](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html) for
-further documentation on the `config` and `parinfo` structures.
+See [Craig's webpage](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html) for further documentation on the `config` and `parinfo` structures.
 

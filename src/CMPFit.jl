@@ -2,16 +2,8 @@ __precompile__(false)
 
 module CMPFit
 
-if VERSION >= v"0.7.0"
-    using Printf
-    using Pkg
-else
-    Nothing = Void
-    findall = find
-    macro cfunction(args...)
-        return :()
-    end
-end
+using Printf
+using Pkg
 
 if isfile(joinpath(dirname(@__FILE__),"..","deps","deps.jl"))
     include("../deps/deps.jl")
@@ -219,11 +211,8 @@ function julia_eval_resid(ndata::Cint, npar::Cint, _param::Ptr{Cdouble}, _resid:
 end
 
 #C-compatible address of the Julia `julia_eval_resid` function.
-if VERSION >= v"0.7.0"
-    const c_eval_resid = @cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Nothing}, Ptr{Wrap_A_Function}))
-else
-    const c_eval_resid = cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Nothing}, Ptr{Wrap_A_Function}))
-end
+const c_eval_resid = @cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Nothing}, Ptr{Wrap_A_Function}))
+
 
 ######################################################################
 # Public functions
@@ -275,11 +264,7 @@ function cmpfit(funct::Function,
     end
 
     perror = Vector{Float64}();
-    if VERSION >= v"0.7.0"
-        covar  = Array{Float64, 2}(undef, 0, 0)
-    else
-        covar  = Array{Float64, 2}(0, 0)        
-    end
+    covar  = Array{Float64, 2}(undef, 0, 0)
     
     if status > 0
         covar = Vector{Float64}()
@@ -336,44 +321,6 @@ function cmpfit(independentData::AbstractArray,
         return ret
     end
     cmpfit(cmpfit_callback, guessParam, parinfo=parinfo, config=config)
-end
-
-
-
-# Import DataFitting and the minimizer package.
-import DataFitting
-
-mutable struct Minimizer <: DataFitting.AbstractMinimizer
-    config::CMPFit.Config
-    Minimizer() = new(CMPFit.Config())
-end
-
-DataFitting.support_param_limits(f::Minimizer) = true
-
-function DataFitting.minimize(minimizer::Minimizer, evaluate::Function,
-                           data::Vector{Float64}, uncert::Vector{Float64},
-                           params::Vector{DataFitting.Parameter})
-    
-    callback(pvalues::Vector{Float64}) = ((data .- evaluate(pvalues)) ./ uncert)
-        
-    guess = getfield.(params, :val)
-    low   = getfield.(params, :low)
-    high  = getfield.(params, :high)
-    parinfo = CMPFit.Parinfo(length(guess))
-    for i in 1:length(guess)
-        llow  = isfinite(low[i])   ?  1  :  0
-        lhigh = isfinite(high[i])  ?  1  :  0
-        parinfo[i].limited = (llow, lhigh)
-        parinfo[i].limits  = (low[i], high[i])
-    end
-    bestfit = CMPFit.cmpfit(callback, guess, parinfo=parinfo, config=minimizer.config)
-
-    # Output
-    if VERSION >= v"0.7.0"
-        return (:Optimal, getfield.(Ref(bestfit), :param), getfield.(Ref(bestfit), :perror))
-    else
-        return (:Optimal, getfield.(bestfit, :param), getfield.(bestfit, :perror))
-    end
 end
 
 end # module
