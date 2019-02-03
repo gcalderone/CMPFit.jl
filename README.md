@@ -45,7 +45,7 @@ y = [-4.4494256E-02,8.7324673E-01,7.4443483E-01,
      6.2792623E-01]
 
 # Data uncertainties
-e = zeros(y) + 0.5
+e = fill(0., size(y)) .+ 0.5
 
 # Define a model (actually a Gaussian curve)
 function GaussModel(x::Vector{Float64}, p::Vector{Float64})
