@@ -1,5 +1,4 @@
 using BinDeps
-using Compat.Sys: iswindows, isapple, isunix
 
 @BinDeps.setup
 
@@ -13,11 +12,11 @@ builddir = joinpath(BinDeps.depsdir(libmpfit), "src", "cmpfit-1.3a", "build")
 libdir = BinDeps.libdir(libmpfit)
 
 libfilename = ""
-if isapple()
+if Sys.isapple()
     libfilename = "libmpfit.dylib"
-elseif isunix()
+elseif Sys.isunix()
     libfilename = "libmpfit.so"
-elseif iswindows()
+elseif Sys.iswindows()
     libfilename = "libmpfit.dll"
 end
 
