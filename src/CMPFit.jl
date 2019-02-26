@@ -1,5 +1,3 @@
-__precompile__(false)
-
 module CMPFit
 
 using Printf
@@ -272,7 +270,7 @@ function cmpfit(funct::Function,
         for i in 1:length(param)^2; push!(covar , unsafe_load(res_C.covar , i)); end
         covar  = reshape(covar, length(param), length(param))
     else
-        warn("mpfit returned status = " * string(status) * " < 0.")
+        @warn "mpfit returned status = " * string(status) * " < 0."
     end
 
     version = findall(x -> x != 0, collect(res_C.version))
