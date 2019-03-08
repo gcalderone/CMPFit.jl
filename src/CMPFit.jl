@@ -1,3 +1,5 @@
+__precompile__(false)
+
 module CMPFit
 
 using Printf
@@ -256,14 +258,14 @@ function cmpfit(funct::Function,
                        (Ptr{Nothing}, Cint         , Cint,          Ptr{Cdouble}, Ptr{imm_Parinfo}, Ptr{Config}, Ptr{Wrap_A_Function}, Ref{Result_C}),
                        c_eval_resid , length(model), length(param), param       , imm_parinfo     , Ref(config), Ref(wrap)           , res_C)
     catch err
-        print_with_color(:red, bold=true, "An error occurred during `mpfit` call:\n")
+        printstyled(color=:red, "An error occurred during `mpfit` call:\n")
         println(err)
         println("")
     end
 
     perror = Vector{Float64}();
     covar  = Array{Float64, 2}(undef, 0, 0)
-    
+
     if status > 0
         covar = Vector{Float64}()
         for i in 1:length(param)  ; push!(perror, unsafe_load(res_C.perror, i)); end
