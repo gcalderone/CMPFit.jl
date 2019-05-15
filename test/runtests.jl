@@ -108,7 +108,7 @@ y = [-4.4494256E-02,8.7324673E-01,7.4443483E-01,
 e = fill(0., size(y)) .+ 0.5
 param = [0.0, 1.0, 1.0, 1.0]
 
-function gaussfunc(x::Vector{Float64}, p::Vector{Float64})    
+function gaussfunc(x::Vector{Float64}, p::Vector{Float64})
     sig2 = p[4] * p[4];
     xc = @. x - p[3];
     return @. p[2] * exp(-0.5 * xc *xc / sig2) + p[1]
@@ -130,6 +130,41 @@ zero = res.perror .- [0.232234, 0.395434, 0.074715, 0.089997];
 zero = res.param .- [0.480441, 4.550754, -0.062562, 0.397473];
 @test minimum(zero) ≈ 0 atol=1.e-5
 @test maximum(zero) ≈ 0 atol=1.e-5
+
+
+## testgaussfit (with explicit derivatives)
+gaussfunc_deriv(x::Vector{Float64}, p::Vector{Float64}) = gaussfunc(x, p)
+function gaussfunc_deriv(x::Vector{Float64}, p::Vector{Float64}, pderiv::Vector{Int}, vderiv::Vector{Vector{Float64}})
+    sig2 = p[4] * p[4];
+    xc = x .- p[3];
+    ee = exp.(-0.5 .* xc.^2 ./ sig2)
+
+    for i in 1:length(pderiv)
+        ipar = pderiv[i]
+        if ipar == 1
+            vderiv[i] .= 1.
+        elseif ipar == 2
+            vderiv[i] .= ee
+        elseif ipar == 3
+            vderiv[i] .= p[2] .* ee .* (x .- p[3]) ./ sig2
+        elseif ipar == 4
+            vderiv[i] .= p[2] .* ee .* (x .- p[3]).^2 ./ sig2 ./ p[4]
+        end
+    end
+
+    return p[2] .* ee .+ p[1]
+end
+
+pinfo = CMPFit.Parinfo(length(param))
+pinfo[1].side = 3
+pinfo[2].side = 3
+pinfo[3].side = 3
+pinfo[4].side = 3
+pinfo[1].deriv_debug = 0
+pinfo[2].deriv_debug = 0
+pinfo[3].deriv_debug = 0
+pinfo[4].deriv_debug = 0
+res = cmpfit(x, y, e, gaussfunc_deriv, param, parinfo=pinfo)
 
 
 ## testgaussfix
@@ -154,4 +189,3 @@ zero = res.perror .- [0., 0.329307, 0., 0.053804];
 zero = res.param .- [0., 5.059244, 0., 0.479746];
 @test minimum(zero) ≈ 0 atol=1.e-5
 @test maximum(zero) ≈ 0 atol=1.e-5
-
