@@ -49,7 +49,7 @@ mutable struct Parinfo
 
     deriv_reltol::Cdouble      # Relative tolerance for derivative debug printout
     deriv_abstol::Cdouble      # Absolute tolerance for derivative debug printout
-    
+
     "Create an empty `Parinfo` structure."
     Parinfo() = new(0, (0, 0), (0, 0), 0, 0, 0, 0, 0, 0, 0)
 end
@@ -192,14 +192,30 @@ end
 #   ERROR: closures are not yet c-callable
 #
 "Function called from C to calculate the residuals"
-function julia_eval_resid(ndata::Cint, npar::Cint, _param::Ptr{Cdouble}, _resid::Ptr{Cdouble}, dummy::Ptr{Nothing}, _funct::Ptr{Wrap_A_Function})
+function julia_eval_resid(ndata::Cint, npar::Cint, _param::Ptr{Cdouble}, _resid::Ptr{Cdouble}, _derivs::Ptr{Ptr{Cdouble}}, _funct::Ptr{Wrap_A_Function})
     wrap  = unsafe_load(_funct)
     param = unsafe_wrap(Vector{Float64}, _param, npar)
     resid = unsafe_wrap(Vector{Float64}, _resid, ndata)
 
+    pderiv = Vector{Int}()
+    vderiv = Vector{Vector{Float64}}()
+    if _derivs != C_NULL
+        derivs = unsafe_wrap(Vector{Ptr{Cdouble}}, _derivs, npar)
+        for ipar in 1:npar
+            if derivs[ipar] != C_NULL
+                push!(pderiv, ipar)
+                push!(vderiv, unsafe_wrap(Vector{Float64}, derivs[ipar], ndata))
+            end
+        end
+    end
+
     # Compute residuals
     try
-        jresid = wrap.funct(param)
+        if length(pderiv) > 0
+            jresid = wrap.funct(param, pderiv, vderiv)
+        else
+            jresid = wrap.funct(param)
+        end
         resid .= reshape(jresid, length(jresid))
     catch err
         println("An error occurred during model evaluation: ")
@@ -211,7 +227,7 @@ function julia_eval_resid(ndata::Cint, npar::Cint, _param::Ptr{Cdouble}, _resid:
 end
 
 #C-compatible address of the Julia `julia_eval_resid` function.
-const c_eval_resid = @cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Nothing}, Ptr{Wrap_A_Function}))
+const c_eval_resid = @cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Ptr{Cdouble}}, Ptr{Wrap_A_Function}))
 
 
 ######################################################################
@@ -251,7 +267,6 @@ function cmpfit(funct::Function,
     end
 
     wrap = Wrap_A_Function(funct)
-    
     status = -999
     try
         status = ccall((:mpfit, libmpfit), Cint,
@@ -309,15 +324,24 @@ end
 
 
 #---------------------------------------------------------------------
-function cmpfit(independentData::AbstractArray, 
-                observedData::AbstractArray, 
+function cmpfit(independentData::AbstractArray,
+                observedData::AbstractArray,
                 uncertainties::AbstractArray,
                 funct::Function,
-                guessParam::Vector{Float64}; 
+                guessParam::Vector{Float64};
                 parinfo=nothing, config=nothing)
     function cmpfit_callback(param::Vector{Float64})
         model = funct(independentData, param)
         ret = (observedData - model) ./ uncertainties
+        return ret
+    end
+
+    function cmpfit_callback(param::Vector{Float64}, pderiv, vderiv)
+        model = funct(independentData, param, pderiv, vderiv)
+        ret = (observedData - model) ./ uncertainties
+        for i in 1:length(vderiv)
+            vderiv[i] ./= -uncertainties
+        end
         return ret
     end
     cmpfit(cmpfit_callback, guessParam, parinfo=parinfo, config=config)
