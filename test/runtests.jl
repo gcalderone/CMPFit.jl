@@ -156,14 +156,7 @@ function gaussfunc_deriv(x::Vector{Float64}, p::Vector{Float64}, pderiv::Vector{
 end
 
 pinfo = CMPFit.Parinfo(length(param))
-pinfo[1].side = 3
-pinfo[2].side = 3
-pinfo[3].side = 3
-pinfo[4].side = 3
-pinfo[1].deriv_debug = 0
-pinfo[2].deriv_debug = 0
-pinfo[3].deriv_debug = 0
-pinfo[4].deriv_debug = 0
+setfield!.(pinfo, :side, Int32(3))
 res = cmpfit(x, y, e, gaussfunc_deriv, param, parinfo=pinfo)
 
 
