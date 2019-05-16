@@ -336,7 +336,7 @@ function cmpfit(independentData::AbstractArray,
         return ret
     end
 
-    function cmpfit_callback(param::Vector{Float64}, pderiv, vderiv)
+    function cmpfit_callback(param::Vector{Float64}, pderiv::Vector{Int}, vderiv::Vector{Vector{Float64}})
         model = funct(independentData, param, pderiv, vderiv)
         ret = (observedData - model) ./ uncertainties
         for i in 1:length(vderiv)
@@ -344,6 +344,7 @@ function cmpfit(independentData::AbstractArray,
         end
         return ret
     end
+
     cmpfit(cmpfit_callback, guessParam, parinfo=parinfo, config=config)
 end
 
