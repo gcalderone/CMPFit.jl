@@ -224,14 +224,10 @@ function julia_eval_resid(ndata::Cint, npar::Cint, _param::Ptr{Cdouble}, _resid:
     return Cint(0)::Cint
 end
 
-#C-compatible address of the Julia `julia_eval_resid` function.
-const c_eval_resid = @cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Ptr{Cdouble}}, Ptr{Wrap_A_Function}))
-
 
 ######################################################################
 # Public functions
 ######################################################################
-
 
 #---------------------------------------------------------------------
 "Main CMPFit function"
@@ -267,6 +263,8 @@ function cmpfit(funct::Function,
     wrap = Wrap_A_Function(funct)
     status = -999
     try
+        #C-compatible address of the Julia `julia_eval_resid` function.
+        c_eval_resid = @cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Ptr{Cdouble}}, Ptr{Wrap_A_Function}))
         status = ccall((:mpfit, libmpfit), Cint,
                        (Ptr{Nothing}, Cint         , Cint,          Ptr{Cdouble}, Ptr{imm_Parinfo}, Ptr{Config}, Ptr{Wrap_A_Function}, Ref{Result_C}),
                        c_eval_resid , length(model), length(param), param       , imm_parinfo     , Ref(config), Ref(wrap)           , res_C)
