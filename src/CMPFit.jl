@@ -1,14 +1,33 @@
 module CMPFit
 
 using Printf
-using Pkg
+using Pkg, Pkg.Artifacts
 
-if isfile(joinpath(dirname(@__FILE__),"..","deps","deps.jl"))
-    include("../deps/deps.jl")
-else
-    error("CMPFit not properly installed. Please run Pkg.build(\"CMPFit\")")
+#= --------------------------------------------------------------------
+
+using SHA
+
+function sha256_file(file::String)
+    return open(file, "r") do io
+        return bytes2hex(sha256(io))
+    end
 end
 
+name = "libmpfit"
+toml = joinpath(@__DIR__, "Artifacts.toml")
+filename = "libmpfit.a"
+hash = artifact_hash(name, toml)
+if hash == nothing || !artifact_exists(hash)
+    url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_linux.a"
+    hash = create_artifact() do artifact_dir
+        download(url, joinpath(artifact_dir, filename))
+    end
+
+    bind_artifact!(toml, name, hash,
+                   download_info=[(url, sha256_file(joinpath(artifact_path(hash), filename)))],
+                   platform=Pkg.BinaryPlatforms.Linux(:x86_64))
+end
+=#
 
 # Exported symbols
 export cmpfit
@@ -265,7 +284,7 @@ function cmpfit(funct::Function,
     try
         #C-compatible address of the Julia `julia_eval_resid` function.
         c_eval_resid = @cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Ptr{Cdouble}}, Ptr{Wrap_A_Function}))
-        status = ccall((:mpfit, libmpfit), Cint,
+        status = ccall((:mpfit, artifact"libmpfit"), Cint,
                        (Ptr{Nothing}, Cint         , Cint,          Ptr{Cdouble}, Ptr{imm_Parinfo}, Ptr{Config}, Ptr{Wrap_A_Function}, Ref{Result_C}),
                        c_eval_resid , length(model), length(param), param       , imm_parinfo     , Ref(config), Ref(wrap)           , res_C)
     catch err
