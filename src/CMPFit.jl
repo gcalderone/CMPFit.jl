@@ -32,6 +32,7 @@ end
 # Exported symbols
 export cmpfit
 
+const libmpfit = joinpath(artifact"libmpfit", "libmpfit.a")
 
 ######################################################################
 # Private definitions
@@ -284,7 +285,7 @@ function cmpfit(funct::Function,
     try
         #C-compatible address of the Julia `julia_eval_resid` function.
         c_eval_resid = @cfunction(julia_eval_resid, Cint, (Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Ptr{Cdouble}}, Ptr{Wrap_A_Function}))
-        status = ccall((:mpfit, artifact"libmpfit"), Cint,
+        status = ccall((:mpfit, libmpfit), Cint,
                        (Ptr{Nothing}, Cint         , Cint,          Ptr{Cdouble}, Ptr{imm_Parinfo}, Ptr{Config}, Ptr{Wrap_A_Function}, Ref{Result_C}),
                        c_eval_resid , length(model), length(param), param       , imm_parinfo     , Ref(config), Ref(wrap)           , res_C)
     catch err
