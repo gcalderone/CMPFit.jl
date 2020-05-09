@@ -1,38 +1,11 @@
 module CMPFit
 
-using Printf
-using Pkg, Pkg.Artifacts
-
-#= --------------------------------------------------------------------
-
-using SHA
-
-function sha256_file(file::String)
-    return open(file, "r") do io
-        return bytes2hex(sha256(io))
-    end
-end
-
-name = "libmpfit"
-toml = joinpath(@__DIR__, "Artifacts.toml")
-filename = "libmpfit.a"
-hash = artifact_hash(name, toml)
-if hash == nothing || !artifact_exists(hash)
-    url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_linux.a"
-    hash = create_artifact() do artifact_dir
-        download(url, joinpath(artifact_dir, filename))
-    end
-
-    bind_artifact!(toml, name, hash,
-                   download_info=[(url, sha256_file(joinpath(artifact_path(hash), filename)))],
-                   platform=Pkg.BinaryPlatforms.Linux(:x86_64))
-end
-=#
+using Printf, Pkg.Artifacts
 
 # Exported symbols
 export cmpfit
 
-const libmpfit = joinpath(artifact"libmpfit", "libmpfit.a")
+const libmpfit = joinpath(artifact"libmpfit", "libmpfit.so")
 
 ######################################################################
 # Private definitions

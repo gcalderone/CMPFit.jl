@@ -1,9 +1,9 @@
 [[libmpfit]]
 arch = "x86_64"
-git-tree-sha1 = "b5a796b566f4b250964df1353708a709345c8486"
+git-tree-sha1 = "f0a96078b3f23cfae705a94c1bb4d7f84faaf1a1"
 libc = "glibc"
 os = "linux"
 
     [[libmpfit.download]]
-    sha256 = "0b0c64307b85c386348d05a62043763bd5f88e2c98b41b0ca1d2ec01d18cdcdc"
-    url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_linux.a"
+    sha256 = "16fffc40ab7a90e15a283fba967c6fbc9cb2a5ce5e72b1985ba8cbd099fcf0d5"
+    url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_linux.so"
