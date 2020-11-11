@@ -3,12 +3,8 @@ module CMPFit
 using Printf
 using Pkg
 
-if isfile(joinpath(dirname(@__FILE__),"..","deps","deps.jl"))
-    include("../deps/deps.jl")
-else
-    error("CMPFit not properly installed. Please run Pkg.build(\"CMPFit\")")
-end
-
+using Pkg.Artifacts
+const libmpfit = joinpath(artifact"libmpfit", "libmpfit.so")
 
 # Exported symbols
 export cmpfit
