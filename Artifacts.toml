@@ -10,18 +10,18 @@ os = "linux"
 
 [[libmpfit]]
 arch = "x86_64"
-git-tree-sha1 = "4b3eaa52bb489d981858569b9d343792b119052a"
+git-tree-sha1 = "bba8dcf2653333fee812596ddcbf7c695d614457"
 os = "macos"
 
     [[libmpfit.download]]
-    sha256 = "d5153d0ed5923d53bec190577e3f172c2c9f02eebcb730ba66d480dc6784a728"
+    sha256 = "5f0d724330ec43eed68303843509cf0fa1b970e6e5bbb768ba44f92fe9a3c138"
     url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_macos.tar.gz"
 
 [[libmpfit]]
 arch = "x86_64"
-git-tree-sha1 = "ddb2b9f8151200089779bd4f6b24d9685b55822f"
+git-tree-sha1 = "21ba4174eb6b3f2b3191bdcc9cb48d393e4bf7a6"
 os = "windows"
 
     [[libmpfit.download]]
-    sha256 = "8b2f889fcb5ec1510b3bea91dc218ea883b2042273689f604eb8bf75504a6232"
+    sha256 = "a3c7ac92bbd5c2624f5b70729277ee63cc8cbca22481cf4b6dcd1047bb03f727"
     url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_win.tar.gz"

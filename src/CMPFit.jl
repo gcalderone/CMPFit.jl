@@ -1,10 +1,16 @@
 module CMPFit
 
 using Printf
-using Pkg
+using Pkg, Pkg.Artifacts
 
-using Pkg.Artifacts
-const libmpfit = joinpath(artifact"libmpfit", "libmpfit.so")
+function binary_lib_path()
+    for file in readdir(artifact"libmpfit")
+        if !isnothing(match(r"^libmpfit", file))
+            return joinpath(artifact"libmpfit", file)
+        end
+    end
+end
+const libmpfit = binary_lib_path()
 
 # Exported symbols
 export cmpfit
