@@ -7,3 +7,21 @@ os = "linux"
     [[libmpfit.download]]
     sha256 = "d90954993325746977c9683654a09cc25505e0229ffb89b482b3ab46dd1459fc"
     url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_linux.tar.gz"
+
+[[libmpfit]]
+arch = "x86_64"
+git-tree-sha1 = "4b3eaa52bb489d981858569b9d343792b119052a"
+os = "macos"
+
+    [[libmpfit.download]]
+    sha256 = "d5153d0ed5923d53bec190577e3f172c2c9f02eebcb730ba66d480dc6784a728"
+    url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_macos.tar.gz"
+
+[[libmpfit]]
+arch = "x86_64"
+git-tree-sha1 = "ddb2b9f8151200089779bd4f6b24d9685b55822f"
+os = "windows"
+
+    [[libmpfit.download]]
+    sha256 = "8b2f889fcb5ec1510b3bea91dc218ea883b2042273689f604eb8bf75504a6232"
+    url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_win.tar.gz"
