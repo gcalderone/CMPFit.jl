@@ -6,20 +6,19 @@
 The `CMPFit.jl` package is a wrapper for the [`mpfit` C-library](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html) by Craig Markwardt, providing access to the the [MINPACK](http://www.netlib.org/minpack/) implementation of the
 [Levenberg-Marquardt algorithm](https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm), and allowing simple and quick solutions to Least Squares minimization problems in Julia.
 
-**This is a wrapper for a C library, hence it require to download the C code and compile it.**
+**This is a wrapper for a C library, hence it uses a binary library compiled from C.**
 Check the [LsqFit](https://github.com/JuliaNLSolvers/LsqFit.jl) package for a pure Julia solution.
 
 -------
 
 ## Installation
 
-To install `CMPFit` your machine should be equipped with `CMake` and a C compiler.  In the Julia REPL type:
+In the Julia REPL type:
 
 ``` julia
 ] add CMPFit
 ```
-This will automaticaly download the `cmpfit` library (v1.3) from [Craig's webpage](https://www.physics.wisc.edu/~craigm/idl/cmpfit.html) and compile it.
-
+This will automaticaly download the binary `cmpfit` library (v1.4) as an artifact matching your platform.
 
 -------
 
