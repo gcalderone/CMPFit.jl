@@ -210,18 +210,12 @@ function julia_eval_resid(ndata::Cint, npar::Cint, _param::Ptr{Cdouble}, _resid:
     end
 
     # Compute residuals
-    try
-        if length(pderiv) > 0
-            jresid = wrap.funct(param, pderiv, vderiv)
-        else
-            jresid = wrap.funct(param)
-        end
-        resid .= reshape(jresid, length(jresid))
-    catch err
-        println("An error occurred during model evaluation: ")
-        println(err)
-        return Cint(-1)::Cint
+    if length(pderiv) > 0
+        jresid = wrap.funct(param, pderiv, vderiv)
+    else
+        jresid = wrap.funct(param)
     end
+    resid .= reshape(jresid, length(jresid))
 
     return Cint(0)::Cint
 end
@@ -271,22 +265,17 @@ function cmpfit(funct::Function,
                        (Ptr{Nothing}, Cint         , Cint,          Ptr{Cdouble}, Ptr{imm_Parinfo}, Ptr{Config}, Ptr{Wrap_A_Function}, Ref{Result_C}),
                        c_eval_resid , length(model), length(param), param       , imm_parinfo     , Ref(config), Ref(wrap)           , res_C)
     catch err
-        printstyled(color=:red, "An error occurred during `mpfit` call:\n")
-        println(err)
-        println("")
+        error("An error occurred during `mpfit` call.")
     end
+    @assert status >= 0 "mpfit returned status = $status < 0."
 
     perror = Vector{Float64}();
     covar  = Array{Float64, 2}(undef, 0, 0)
 
-    if status > 0
-        covar = Vector{Float64}()
-        for i in 1:length(param)  ; push!(perror, unsafe_load(res_C.perror, i)); end
-        for i in 1:length(param)^2; push!(covar , unsafe_load(res_C.covar , i)); end
-        covar  = reshape(covar, length(param), length(param))
-    else
-        @warn "mpfit returned status = " * string(status) * " < 0."
-    end
+    covar = Vector{Float64}()
+    for i in 1:length(param)  ; push!(perror, unsafe_load(res_C.perror, i)); end
+    for i in 1:length(param)^2; push!(covar , unsafe_load(res_C.covar , i)); end
+    covar  = reshape(covar, length(param), length(param))
 
     version = findall(x -> x != 0, collect(res_C.version))
     if length(version) == 0
