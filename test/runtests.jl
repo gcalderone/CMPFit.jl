@@ -1,6 +1,8 @@
 using Test
 using CMPFit
 
+@info CMPFit.binary_lib_path()
+
 ## testlinfit
 x = [-1.7237128E+00,1.8712276E+00,-9.6608055E-01,
      -2.8394297E-01,1.3416969E+00,1.3757038E+00,
