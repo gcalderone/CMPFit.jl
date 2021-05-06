@@ -5,23 +5,21 @@ libc = "glibc"
 os = "linux"
 
     [[libmpfit.download]]
-    sha256 = "d90954993325746977c9683654a09cc25505e0229ffb89b482b3ab46dd1459fc"
-    url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_linux.tar.gz"
-
+    sha256 = "4e82e45f4471668d257c3ffad9191f139d5caaef862989384b3208c3524cd737"
+    url = "https://qsfit.inaf.it/qsfitdata/CMPFitBinaries/libmpfit_x64_linux.tar.gz"
 [[libmpfit]]
 arch = "x86_64"
 git-tree-sha1 = "bba8dcf2653333fee812596ddcbf7c695d614457"
 os = "macos"
 
     [[libmpfit.download]]
-    sha256 = "5f0d724330ec43eed68303843509cf0fa1b970e6e5bbb768ba44f92fe9a3c138"
-    url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_macos.tar.gz"
-
+    sha256 = "65e7b1daf13d6e5ec933d0e71a86e16a2b19be86d30adaa9d8475a6df4494683"
+    url = "https://qsfit.inaf.it/qsfitdata/CMPFitBinaries/libmpfit_x64_macos.tar.gz"
 [[libmpfit]]
 arch = "x86_64"
-git-tree-sha1 = "21ba4174eb6b3f2b3191bdcc9cb48d393e4bf7a6"
+git-tree-sha1 = "7223c3b488dbc040e43fd4c14e8215d13d3d43f2"
 os = "windows"
 
     [[libmpfit.download]]
-    sha256 = "a3c7ac92bbd5c2624f5b70729277ee63cc8cbca22481cf4b6dcd1047bb03f727"
-    url = "http://wwwuser.oats.inaf.it/calderone/CMPFitBinaries/libmpfit_x64_win.tar.gz"
+    sha256 = "28294e3a1474ddbbefbde1ecbbaf870df52abc7de581384410d771ee8aaa5c7d"
+    url = "https://qsfit.inaf.it/qsfitdata/CMPFitBinaries/libmpfit_x64_win.tar.gz"
