@@ -5,7 +5,7 @@ libc = "glibc"
 os = "linux"
 
     [[libmpfit.download]]
-    sha256 = "4e82e45f4471668d257c3ffad9191f139d5caaef862989384b3208c3524cd737"
+    sha256 = "3d2fa77c90a72d1ea39598b8d2de10ca31c56c46c88c96b543521ff7adcabe01"
     url = "https://qsfit.inaf.it/qsfitdata/CMPFitBinaries/libmpfit_x64_linux.tar.gz"
 [[libmpfit]]
 arch = "x86_64"
@@ -13,13 +13,21 @@ git-tree-sha1 = "bba8dcf2653333fee812596ddcbf7c695d614457"
 os = "macos"
 
     [[libmpfit.download]]
-    sha256 = "65e7b1daf13d6e5ec933d0e71a86e16a2b19be86d30adaa9d8475a6df4494683"
+    sha256 = "9aba3e0578f0fe5e4212358f5752489d68575c3fc094fd6517d53bab5f493db9"
     url = "https://qsfit.inaf.it/qsfitdata/CMPFitBinaries/libmpfit_x64_macos.tar.gz"
+[[libmpfit]]
+arch = "aarch64"
+git-tree-sha1 = "1793c8cbba90868a5ea37c9b2351cb6392b62294"
+os = "macos"
+
+    [[libmpfit.download]]
+    sha256 = "8faef876e14d5730cca8c6963d2088ebda355ce0d7f9c61a3f8c27befa4bad2b"
+    url = "https://qsfit.inaf.it/qsfitdata/CMPFitBinaries/libmpfit_aarch64_macos.tar.gz"
 [[libmpfit]]
 arch = "x86_64"
 git-tree-sha1 = "7223c3b488dbc040e43fd4c14e8215d13d3d43f2"
 os = "windows"
 
     [[libmpfit.download]]
-    sha256 = "28294e3a1474ddbbefbde1ecbbaf870df52abc7de581384410d771ee8aaa5c7d"
+    sha256 = "1ebcd10e9d0586ef221a6f1bb8cd904db61aeb193a3d79911a3ae94eabe1fb5e"
     url = "https://qsfit.inaf.it/qsfitdata/CMPFitBinaries/libmpfit_x64_win.tar.gz"
