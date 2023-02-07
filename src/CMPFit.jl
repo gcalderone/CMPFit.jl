@@ -163,20 +163,20 @@ end
 
 #---------------------------------------------------------------------
 # Add Base.show method to show CMPFit results
-function Base.show(stream::IO, res::Result)
-    @printf "  CMPFit ver. = %s\n"  res.version
-    @printf "      STATUS = %d\n"   res.status
-    @printf "  CHI-SQUARE = %f    (%d DOF)\n"  res.bestnorm  res.dof
-    @printf "        NPAR = %d\n"   res.npar
-    @printf "       NFREE = %d\n"   res.nfree
-    @printf "     NPEGGED = %d\n"   res.npegged
-    @printf "       NITER = %d\n"   res.niter
-    @printf "        NFEV = %d\n"   res.nfev
-    @printf "Elapsed time = %f s\n" res.elapsed
+function Base.show(io::IO, res::Result)
+    @printf io "  CMPFit ver. = %s\n"  res.version
+    @printf io "      STATUS = %d\n"   res.status
+    @printf io "  CHI-SQUARE = %f    (%d DOF)\n"  res.bestnorm  res.dof
+    @printf io "        NPAR = %d\n"   res.npar
+    @printf io "       NFREE = %d\n"   res.nfree
+    @printf io "     NPEGGED = %d\n"   res.npegged
+    @printf io "       NITER = %d\n"   res.niter
+    @printf io "        NFEV = %d\n"   res.nfev
+    @printf io "Elapsed time = %f s\n" res.elapsed
 
-    @printf "\n"
+    @printf io "\n"
     for i in 1:res.npar
-        @printf "  P[%d] = %f +/- %f\n"  i  res.param[i]  res.perror[i]
+        @printf io "  P[%d] = %f +/- %f\n"  i  res.param[i]  res.perror[i]
     end
 end
 
